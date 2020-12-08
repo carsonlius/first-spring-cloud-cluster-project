@@ -1,15 +1,30 @@
 package com.carsonlius.springcloudconsumer.config;
 
+import com.netflix.loadbalancer.IRule;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
+import com.netflix.loadbalancer.RandomRule;
+
 
 @Configuration
 public class RestTemplateConfig {
+
+    /**
+     * loadBalance 轮训方式
+     */
     @Bean
     @LoadBalanced
-    public RestTemplate restTemplate(){
+    public RestTemplate restTemplate() {
+//        return new
+
+        new RandomRule();
         return new RestTemplate();
+    }
+
+    @Bean
+    public IRule rule() {
+        return new RandomRule();
     }
 }
