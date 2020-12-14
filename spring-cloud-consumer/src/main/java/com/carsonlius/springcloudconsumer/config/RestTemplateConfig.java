@@ -23,8 +23,8 @@ public class RestTemplateConfig {
         return new RestTemplate();
     }
 
-    @Bean
-    public IRule rule() {
-        return new RandomRule();
-    }
+//    @Bean
+//    public IRule rule() {
+//        return new RandomRule();
+//    }
 }

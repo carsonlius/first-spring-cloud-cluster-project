@@ -2,6 +2,7 @@ package com.carsonlius.springcloudusercoreprovider2.web;
 
 import com.carsonlius.springcloudusercoreprovider2.model.User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -28,12 +29,24 @@ public class Index {
     }
 
     @GetMapping(value = "/testParams")
-    public User testParams(User user)
+    public User testParams(Integer age, String name)
     {
-        System.out.println("用户2 " + user);
+        User user1 = new User();
+        user1.setName(name);
+        user1.setAge(age);
+        System.out.println("name:" + name + "  age:" + age);
 
-        user.setName("奥巴马" + Math.random());
+        return user1;
+    }
 
-        return user;
+    @PostMapping(value = "/testParams")
+    public User testPostParams(String name, Integer age)
+    {
+        User user1 = new User();
+        user1.setName(name);
+        user1.setAge(age);
+        System.out.println("name:" + name + "  age:" + age);
+
+        return user1;
     }
 }
