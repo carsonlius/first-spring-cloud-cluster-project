@@ -1,6 +1,8 @@
 package com.carsonlius.springcloudusercoreprovider2.web;
 
+import com.carsonlius.springcloudusercoreprovider2.exception.ErrorParamsException;
 import com.carsonlius.springcloudusercoreprovider2.model.User;
+import com.thoughtworks.xstream.converters.ErrorWritingException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,5 +50,14 @@ public class Index {
         System.out.println("name:" + name + "  age:" + age);
 
         return user1;
+    }
+
+    @GetMapping(value = "testHystrix")
+    public Object testHystrix() throws InterruptedException, ErrorParamsException {
+        Thread.sleep(3);
+        if (true) {
+            throw new ErrorParamsException("输入的参数异常");
+        }
+        return "带有熔断器的正常的service2";
     }
 }

@@ -10,6 +10,12 @@ import java.util.List;
 
 @RestController
 public class Index {
+    @GetMapping(value = "testHystrix")
+    public Object testHystrix()
+    {
+        return "带有熔断器的正常的service";
+    }
+
     @GetMapping(value = "/test")
     public Object test()
     {

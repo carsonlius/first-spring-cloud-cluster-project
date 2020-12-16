@@ -1,6 +1,10 @@
 package com.carsonlius.springcloudconsumer.web;
 
+import com.carsonlius.springcloudconsumer.hystrix.CustomHystrixCommand;
 import com.carsonlius.springcloudconsumer.model.User;
+import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +23,53 @@ import java.util.TreeMap;
 public class Index {
     @Resource
     private RestTemplate restTemplate;
+
+    @GetMapping(value = "testCustomCommand")
+    public Object testCustomCommand()
+    {
+        String url = "http://USER-CORE-PROVIDER/testHystrix";
+
+        // 执行请求
+        CustomHystrixCommand customHystrixCommand = new CustomHystrixCommand(
+                // 第一个参数是固定的
+                com.netflix.hystrix.HystrixCommand.Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("")),
+                restTemplate,
+                url
+        );
+
+        return customHystrixCommand.execute();
+    }
+
+    /**
+    * @HystrixCommand 当前函数激活熔断机制,远程服务超时或者异常，则会自动熔断
+     * 属性 @fallbackMethod 指定熔断函数
+     * @commandProperties 设置熔断属性
+     *      @HystrixProperty 指定具体属性, execution.isolation.thread.timeoutInMilliseconds 超时时间,默认1秒
+     * ignoreExceptions 这种异常不进行熔断, 直接抛除异常
+    * */
+    @GetMapping(value = "/testHystrix")
+    @HystrixCommand(fallbackMethod = "error", commandProperties = {
+        @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "5000"),
+    },
+            ignoreExceptions = {Exception.class}
+    )
+    public Object testHystrix(){
+        String url = "http://USER-CORE-PROVIDER/testHystrix";
+        ResponseEntity responseEntity= restTemplate.getForEntity(url, String.class);
+
+        return responseEntity.getBody();
+    }
+
+    /**
+     * 服务降级回调函数
+     * @Throwable 捕捉到的异常
+     * */
+    private String error(Throwable throwable)
+    {
+        System.out.println(throwable);
+        System.out.println(throwable.getClass().getCanonicalName());
+        return "熔断函数" ;
+    }
 
     @GetMapping(value = "/test")
     public Object test()
